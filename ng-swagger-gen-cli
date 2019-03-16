@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+'use strict';
+
+function parseJSON(file) {
+  return JSON.parse(fs.readFileSync(file, 'utf8'));
+}
+
+const ArgumentParser = require('argparse').ArgumentParser;
+const fs = require('fs');
+const path = require('path');
+const pkg = parseJSON(path.join(__dirname, 'package.json'));
+
+const argParser = new ArgumentParser({
+  addHelp: true,
+  description: 'Swagger API client generator CLI for Angular 2+ projects.',
+  version: pkg.version,
+});
+argParser.addArgument(['-i', '--input'], {
+  action: 'store',
+  dest: 'config',
+  help: 'The swagger-gen CLI configuration file.',
+});
+argParser.addArgument(['-g', '--generate'], {
+  action: 'store',
+  dest: 'generate',
+  help: 'Generates the given API by name. If no name(s) were given, all APIs get generated.',
+  metavar: 'API_NAMES',
+});
+argParser.addArgument(['-u', '--update'], {
+  action: 'store',
+  dest: 'update',
+  help: 'Updates the given API by name. If no name(s) were given, all APIs get updated.',
+  metavar: 'API_NAMES',
+});
+argParser.addArgument(['-c', '--compare'], {
+  action: 'store',
+  dest: 'compare',
+  help:
+    'Compares the given API by name with their current remote swagger descriptor. If no name(s) were given, all APIs get compared.',
+  metavar: 'API_NAMES',
+});
+
+const args = argParser.parseArgs();
+const config = args.config;
+const configExists = fs.existsSync(config);
+
+if (configExists) {
+  const options = parseJSON(config);
+
+  run({
+    compare: options.compare,
+    configurations: options.configurations,
+    generate: options.generate,
+    update: options.update,
+  });
+} else {
+  argParser.parseArgs(['--help']);
+}
+
+function run(options) {
+  const ngSwaggerGen = require('./ng-swagger-gen-cli.js');
+  ngSwaggerGen(options);
+}

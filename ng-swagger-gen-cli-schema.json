@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "id": "https://github.com/spitfjre/ng-swagger-gen-cli/blob/master/ng-swagger-gen-cli-schema.json",
+  "title": "Options for ng-swagger-gen-cli",
+  "type": "object",
+  "required": ["configurations"],
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "configurations": {
+      "type": "array",
+      "required": ["name", "swagger", "swagger-gen", "url"],
+      "properties": {
+        "name": {
+          "description": "The name of the configuration.",
+          "type": "string"
+        },
+        "swagger": {
+          "description": "The location of the swagger descriptor in JSON format.",
+          "type": "string"
+        },
+        "swagger-gen": {
+          "description": "The location of the ng-swagger-gen file.",
+          "type": "string"
+        },
+        "url": {
+          "description": "The URL of the swagger descriptor in JSON format.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}
