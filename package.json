@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "author": "Maximilian Aulbach",
-  "description": "A cli tool for swagger 2.0 codegen for Angular",
+  "description": "A CLI tool for swagger 2.0 codegen for Angular",
   "private": false,
   "repository": {
     "type": "git",
@@ -29,6 +29,6 @@
     "rxjs": ">=6.0.0"
   },
   "bin": {
-    "ng-swagger-gen": "./ng-swagger-gen"
+    "ng-swagger-gen-cli": "./ng-swagger-gen-cli"
   }
 }
