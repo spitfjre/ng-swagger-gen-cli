@@ -50,7 +50,9 @@ function compare(apis) {
               title: 'Fetch and compare swagger json',
               task: () =>
                 requestPromise(api.url).then((data) => {
-                  const currentJson = fs.readFileSync(api.swagger);
+                  const currentSwaggerGenJson = fs.readFileSync(api.swaggerGen, 'utf8');
+                  const swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
+                  const currentJson = fs.readFileSync(swaggerPath, 'utf8');
 
                   const currentHash = md5(currentJson);
                   const fetchedHash = md5(data);
@@ -117,7 +119,12 @@ function update(apis) {
           [
             {
               title: 'Fetch swagger json',
-              task: () => requestPromise(api.url).then((data) => fs.writeFileSync(api.swagger, data)),
+              task: () =>
+                requestPromise(api.url).then((data) => {
+                  const currentSwaggerGenJson = fs.readFileSync(api.swaggerGen);
+                  const swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
+                  fs.writeFileSync(swaggerPath, data);
+                }),
             },
             {
               title: 'Generating classes',

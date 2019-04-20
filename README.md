@@ -44,7 +44,6 @@ of the JSON schema on `./node_modules/ng-swagger-gen-cli/ng-swagger-gen-cli-sche
 The supported properties in the JSON file are:
 
 - `name`: The name of the service. This is just needed for reference and does not affect anything else.
-- `swagger`: The relative location where the local version swagger descriptor is saved.
 - `swaggerGen`: The relative location of the `ng-swagger-gen` configuration file, that describes how the files should be generated for the given service.
 - `url`: The url endpoint of the swagger descriptor. This is needed for comparing local and remote json files and for updating the local file.
 
@@ -58,7 +57,6 @@ The following is an example of a configuration file:
   "configurations": [
     {
       "name": "auth",
-      "swagger": "./path/to/swagger/file.json",
       "swaggerGen": "./path/to/ng-swagger-gen/file.json",
       "url": "http://url/to/swagger/v2/api-docs"
     }
