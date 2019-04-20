@@ -10,8 +10,8 @@
     "url": "git+https://github.com/spitfjre/ng-swagger-gen-cli.git"
   },
   "scripts": {
-    "format": "prettier --write \"**/*{.js,.json,.md}\"",
-    "release": "tsc && npm publish ./"
+    "compile": "node_modules/.bin/tsc",
+    "format": "prettier --write \"**/*{.js,.json,.md}\""
   },
   "dependencies": {
     "argparse": "^1.0.10",
