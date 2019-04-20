@@ -67,82 +67,65 @@ function executeOperation(operation: Operation, configurations: Configuration[])
 }
 
 function compare(apis: Configuration[]): void {
-  const checkedApis: boolean[] = [];
+  const checkedApis: any = {};
 
   const tasks = new listr(
-    apis.map((api) => ({
-      title: `Check ${api.name}`,
+    apis.map((api: Configuration) => ({
+      title: `Compare ${api.name}`,
       task: () =>
-        new listr(
-          [
-            {
-              title: 'Fetch and compare swagger json',
-              task: () =>
-                requestPromise(api.url).then((data: any) => {
-                  const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
-                  const swaggerPath: string = JSON.parse(currentSwaggerGenJson).swagger;
-                  const currentJson = readFileSync(swaggerPath, 'utf8');
+        requestPromise(api.url).then((data: any) => {
+          const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
+          const swaggerPath: string = JSON.parse(currentSwaggerGenJson).swagger;
+          const currentJson = readFileSync(swaggerPath, 'utf8');
 
-                  const currentHash = md5(currentJson);
-                  const fetchedHash = md5(data);
+          const currentHash = md5(currentJson);
+          const fetchedHash = md5(data);
 
-                  checkedApis.push(fetchedHash === currentHash);
-                }),
-            },
-          ],
-          { concurrent: false },
-        ),
+          checkedApis[api.name] = fetchedHash === currentHash;
+        }),
     })),
-    { concurrent: false },
+    { concurrent: false, exitOnError: false },
   );
 
-  tasks
-    .run()
-    .then(() => {
-      const filteredApis = checkedApis
-        .map((result: boolean, index: number) => (!result ? apis[index] : null))
-        .filter((api: Configuration | null) => api !== null)
-        .map((api: Configuration | null) => api as Configuration);
+  tasks.run().then(() => presetCompareResult(apis, checkedApis), () => presetCompareResult(apis, checkedApis));
+}
 
-      if (filteredApis.length === 0) {
-        console.log(`\nAll (requested) services are in sync.`);
-      } else {
-        console.log(
-          `\nThe services ${filteredApis.map((api) => chalk.blue.bold(api.name)).join(' ')} are out of sync!\n`,
-        );
+function presetCompareResult(apis: Configuration[], checkedApis: any): void {
+  const filteredApis = Object.entries(checkedApis)
+    .map((entry: [string, any]) => apis.find((api: Configuration) => api.name === entry[0] && entry[1] === false))
+    .filter((api: Configuration | undefined) => api !== undefined)
+    .map((api: Configuration | undefined) => api as Configuration);
 
-        filteredApis.forEach((api) => {
-          console.log(`The changes for ${chalk.blue.bold(api.name)} can be checked at ${chalk.green.bold(api.url)}.`);
-        });
-      }
-    })
-    .catch((err: Error) => console.error(err));
+  if (filteredApis.length === 0) {
+    console.log(`\nAll (requested) services are in sync.`);
+  } else {
+    console.log(
+      `\nThe services ${filteredApis
+        .map((api: Configuration) => chalk.blue.bold(api.name))
+        .join(' ')} are out of sync!\n`,
+    );
+
+    filteredApis.forEach((api: Configuration) => {
+      console.log(`The changes for ${chalk.blue.bold(api.name)} can be checked at ${chalk.green.bold(api.url)}.`);
+    });
+  }
 }
 
 function generate(apis: Configuration[]): void {
   const tasks = new listr(
-    apis.map((api) => ({
+    apis.map((api: Configuration) => ({
       title: `Generate ${api.name}`,
-      task: () =>
-        new listr(
-          [
-            {
-              title: 'Generating classes',
-              task: () => execa.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
-            },
-          ],
-          { concurrent: false },
-        ),
+      task: () => execa.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
     })),
-    { concurrent: false },
+    { concurrent: false, exitOnError: false },
   );
 
-  tasks.run().catch((err: Error) => console.error(err));
+  tasks.run().then(() => {}, () => {});
 }
 
 function update(apis: Configuration[]): void {
   const tasks = new listr(
-    apis.map((api) => ({
+    apis.map((api: Configuration) => ({
       title: `Update ${api.name}`,
       task: () =>
         new listr(
@@ -161,11 +144,11 @@ function update(apis: Configuration[]): void {
               task: () => execa.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
             },
           ],
-          { concurrent: false },
+          { concurrent: false, exitOnError: true },
         ),
     })),
-    { concurrent: false },
+    { concurrent: false, exitOnError: false },
   );
 
-  tasks.run().catch((err: Error) => console.error(err));
+  tasks.run().then(() => {}, () => {});
 }
