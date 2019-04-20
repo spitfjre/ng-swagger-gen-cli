@@ -1,3 +1,6 @@
 # Created by .ignore support plugin (hsz.mobi)
 .idea
 node_modules
+
+ng-swagger-gen-cli-executor.js
+ng-swagger-gen-cli-parser.js

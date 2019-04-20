@@ -9,7 +9,7 @@ In your project, run:
 ```bash
 cd <your_angular_app_dir>
 npm install ng-swagger-gen-cli --save-dev
-node_modules/.bin/ng-swagger-gen-cli -i <path_to_ng_swagger_cli_json> -o operation
+node_modules/.bin/ng-swagger-gen-cli -i <path_to_ng_swagger_cli_json> -o operation -s selection
 ```
 
 Where:
@@ -17,6 +17,7 @@ Where:
 - `path_to_ng_swagger_cli_json` is the relative path to the ng-swagger-cli JSON
   file.
 - `operation` is the operation that should be executed. There are three operations permitted: `compare`, `generate` and `update`.
+- `selection` is an optional argument, that lets you execute operations on a selected service. If your selection contains more than one service, you have to provide the flag multiple times. For example: `-s service1 -s service2`
 
 Please, run the `ng-swagger-gen-cli` with the `--help` argument to view all available command line arguments.
 

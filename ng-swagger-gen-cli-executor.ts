@@ -8,6 +8,7 @@ import { readFileSync, writeFileSync } from 'fs';
 export interface Options {
   configurations: any;
   operation: Operation;
+  selection?: string[];
 }
 
 export type Operation = 'compare' | 'generate' | 'update';
@@ -32,15 +33,32 @@ export function execute(options: Options): void {
     process.exit(1);
   }
 
-  switch (options.operation) {
+  if (options.selection !== undefined) {
+    const filteredConfigurations: Configuration[] = options.configurations.filter(
+      (configuration: Configuration) => (options.selection as string[]).indexOf(configuration.name) !== -1,
+    );
+
+    if (filteredConfigurations.length === 0) {
+      console.error('No selected services were specified');
+      process.exit(1);
+    } else {
+      executeOperation(options.operation, filteredConfigurations);
+    }
+  } else {
+    executeOperation(options.operation, options.configurations);
+  }
+}
+
+function executeOperation(operation: Operation, configurations: Configuration[]): void {
+  switch (operation) {
     case 'compare':
-      compare(options.configurations);
+      compare(configurations);
       break;
     case 'generate':
-      generate(options.configurations);
+      generate(configurations);
       break;
     case 'update':
-      update(options.configurations);
+      update(configurations);
       break;
     default:
       console.error('No valid operation was specified');

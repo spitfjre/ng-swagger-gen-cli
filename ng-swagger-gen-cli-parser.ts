@@ -22,13 +22,22 @@ export function parse(): void {
     dest: 'operation',
     help: 'Desired operation that should be executed.',
   });
+  argParser.addArgument(['-s', '--selection'], {
+    action: 'append',
+    dest: 'selection',
+    help: 'Selection of services, that should be operated on.',
+  });
 
-  const args: { config: string; operation: Operation } = argParser.parseArgs();
+  const args: { config: string; operation: Operation; selection: string[] | null } = argParser.parseArgs();
 
   if (existsSync(args.config)) {
     const parsedConfig: { configurations: Configuration[] } = parseJSON(args.config);
 
-    run({ configurations: parsedConfig.configurations, operation: args.operation });
+    run({
+      configurations: parsedConfig.configurations,
+      operation: args.operation,
+      selection: !!args.selection ? args.selection : undefined,
+    });
   } else {
     argParser.parseArgs(['--help']);
   }
