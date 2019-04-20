@@ -20,11 +20,11 @@ argParser.addArgument(['-i', '--input'], {
   dest: 'config',
   help: 'The swagger-gen CLI configuration file.',
 });
-argParser.addArgument(['-m', '--modus'], {
+argParser.addArgument(['-o', '--operation'], {
   action: 'store',
-  choices: ['check', 'generate', 'update'],
-  dest: 'modus',
-  help: 'Desired modus that should be executed.',
+  choices: ['compare', 'generate', 'update'],
+  dest: 'operation',
+  help: 'Desired operation that should be executed.',
 });
 
 const args = argParser.parseArgs();
@@ -34,7 +34,7 @@ const configExists = fs.existsSync(config);
 if (configExists) {
   const options = parseJSON(config);
 
-  run({ configurations: options.configurations, modus: options.modus });
+  run({ configurations: options.configurations, operation: args.operation });
 } else {
   argParser.parseArgs(['--help']);
 }

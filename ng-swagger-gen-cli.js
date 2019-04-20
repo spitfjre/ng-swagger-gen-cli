@@ -16,59 +16,52 @@ function ngSwaggerGenCli(options) {
     process.exit(1);
   }
 
-  if (!options.modus) {
-    console.error('No modus was specified');
+  if (!options.operation) {
+    console.error('No operation was specified');
     process.exit(1);
   }
 
-  switch (options.modus) {
-    case 'check':
-      check(options.configurations);
+  switch (options.operation) {
+    case 'compare':
+      compare(options.configurations);
       break;
     case 'generate':
-      generate();
+      generate(options.configurations);
       break;
     case 'update':
-      update();
+      update(options.configurations);
       break;
     default:
-      console.error('No valid modus was specified');
+      console.error('No valid operation was specified');
       process.exit(1);
   }
 }
 
-function check(apis) {
+function compare(apis) {
   const checkedApis = [];
 
   const tasks = new listr(
-    apis
-      .map((api) => ({
-        title: `Check ${api.name}`,
-        task: () =>
-          new listr(
-            [
-              {
-                title: 'Fetch and compare swagger json',
-                task: () =>
-                  requestPromise(api.url).then((data) => {
-                    const currentJson = fs.readFileSync(api.swagger);
+    apis.map((api) => ({
+      title: `Check ${api.name}`,
+      task: () =>
+        new listr(
+          [
+            {
+              title: 'Fetch and compare swagger json',
+              task: () =>
+                requestPromise(api.url).then((data) => {
+                  const currentJson = fs.readFileSync(api.swagger);
 
-                    const currentHash = md5(currentJson);
-                    const fetchedHash = md5(data);
+                  const currentHash = md5(currentJson);
+                  const fetchedHash = md5(data);
 
-                    checkedApis.push(fetchedHash === currentHash);
-                  }),
-              },
-            ],
-            { concurrent: false },
-          ),
-      }))
-      .concat([
-        {
-          title: 'Cleanup',
-          task: () => fs.removeSync(`./swagger/tmp`),
-        },
-      ]),
+                  checkedApis.push(fetchedHash === currentHash);
+                }),
+            },
+          ],
+          { concurrent: false },
+        ),
+    })),
     { concurrent: false },
   );
 
