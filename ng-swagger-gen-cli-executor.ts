@@ -1,16 +1,27 @@
-'use strict';
+import chalk from 'chalk';
+import execa from 'execa';
+import listr from 'listr';
+import md5 from 'md5';
+import requestPromise from 'request-promise-native';
+import { readFileSync, writeFileSync } from 'fs';
 
-const chalk = require('chalk');
-const execa = require('execa');
-const fs = require('fs-extra');
-const listr = require('listr');
-const md5 = require('md5');
-const requestPromise = require('request-promise');
+export interface Options {
+  configurations: any;
+  operation: Operation;
+}
+
+export type Operation = 'compare' | 'generate' | 'update';
+
+export interface Configuration {
+  name: string;
+  swaggerGen: string;
+  url: string;
+}
 
 /**
  * Main generate function
  */
-function ngSwaggerGenCli(options) {
+export function execute(options: Options): void {
   if (!options.configurations || options.configurations.leading === 0) {
     console.error('Configurations not specified');
     process.exit(1);
@@ -37,8 +48,8 @@ function ngSwaggerGenCli(options) {
   }
 }
 
-function compare(apis) {
-  const checkedApis = [];
+function compare(apis: Configuration[]): void {
+  const checkedApis: boolean[] = [];
 
   const tasks = new listr(
     apis.map((api) => ({
@@ -49,10 +60,10 @@ function compare(apis) {
             {
               title: 'Fetch and compare swagger json',
               task: () =>
-                requestPromise(api.url).then((data) => {
-                  const currentSwaggerGenJson = fs.readFileSync(api.swaggerGen, 'utf8');
-                  const swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
-                  const currentJson = fs.readFileSync(swaggerPath, 'utf8');
+                requestPromise(api.url).then((data: any) => {
+                  const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
+                  const swaggerPath: string = JSON.parse(currentSwaggerGenJson).swagger;
+                  const currentJson = readFileSync(swaggerPath, 'utf8');
 
                   const currentHash = md5(currentJson);
                   const fetchedHash = md5(data);
@@ -71,8 +82,9 @@ function compare(apis) {
     .run()
     .then(() => {
       const filteredApis = checkedApis
-        .map((result, index) => (!result ? apis[index] : null))
-        .filter((api) => api !== null);
+        .map((result: boolean, index: number) => (!result ? apis[index] : null))
+        .filter((api: Configuration | null) => api !== null)
+        .map((api: Configuration | null) => api as Configuration);
 
       if (filteredApis.length === 0) {
         console.log(`\nAll (requested) services are in sync.`);
@@ -86,10 +98,10 @@ function compare(apis) {
         });
       }
     })
-    .catch((err) => console.error(err));
+    .catch((err: Error) => console.error(err));
 }
 
-function generate(apis) {
+function generate(apis: Configuration[]): void {
   const tasks = new listr(
     apis.map((api) => ({
       title: `Generate ${api.name}`,
@@ -107,10 +119,10 @@ function generate(apis) {
     { concurrent: false },
   );
 
-  tasks.run().catch((err) => console.error(err));
+  tasks.run().catch((err: Error) => console.error(err));
 }
 
-function update(apis) {
+function update(apis: Configuration[]): void {
   const tasks = new listr(
     apis.map((api) => ({
       title: `Update ${api.name}`,
@@ -120,10 +132,10 @@ function update(apis) {
             {
               title: 'Fetch swagger json',
               task: () =>
-                requestPromise(api.url).then((data) => {
-                  const currentSwaggerGenJson = fs.readFileSync(api.swaggerGen);
+                requestPromise(api.url).then((data: any) => {
+                  const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
                   const swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
-                  fs.writeFileSync(swaggerPath, data);
+                  writeFileSync(swaggerPath, data);
                 }),
             },
             {
@@ -137,7 +149,5 @@ function update(apis) {
     { concurrent: false },
   );
 
-  tasks.run().catch((err) => console.error(err));
+  tasks.run().catch((err: Error) => console.error(err));
 }
-
-module.exports = ngSwaggerGenCli;
