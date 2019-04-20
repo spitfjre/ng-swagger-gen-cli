@@ -20,7 +20,7 @@
           "description": "The location of the swagger descriptor in JSON format.",
           "type": "string"
         },
-        "swagger-gen": {
+        "swaggerGen": {
           "description": "The location of the ng-swagger-gen file.",
           "type": "string"
         },

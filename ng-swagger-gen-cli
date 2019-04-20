@@ -20,24 +20,11 @@ argParser.addArgument(['-i', '--input'], {
   dest: 'config',
   help: 'The swagger-gen CLI configuration file.',
 });
-argParser.addArgument(['-g', '--generate'], {
+argParser.addArgument(['-m', '--modus'], {
   action: 'store',
-  dest: 'generate',
-  help: 'Generates the given API by name. If no name(s) were given, all APIs get generated.',
-  metavar: 'API_NAMES',
-});
-argParser.addArgument(['-u', '--update'], {
-  action: 'store',
-  dest: 'update',
-  help: 'Updates the given API by name. If no name(s) were given, all APIs get updated.',
-  metavar: 'API_NAMES',
-});
-argParser.addArgument(['-c', '--compare'], {
-  action: 'store',
-  dest: 'compare',
-  help:
-    'Compares the given API by name with their current remote swagger descriptor. If no name(s) were given, all APIs get compared.',
-  metavar: 'API_NAMES',
+  choices: ['check', 'generate', 'update'],
+  dest: 'modus',
+  help: 'Desired modus that should be executed.',
 });
 
 const args = argParser.parseArgs();
@@ -47,17 +34,12 @@ const configExists = fs.existsSync(config);
 if (configExists) {
   const options = parseJSON(config);
 
-  run({
-    compare: options.compare,
-    configurations: options.configurations,
-    generate: options.generate,
-    update: options.update,
-  });
+  run({ configurations: options.configurations, modus: options.modus });
 } else {
   argParser.parseArgs(['--help']);
 }
 
 function run(options) {
-  const ngSwaggerGen = require('./ng-swagger-gen-cli.js');
-  ngSwaggerGen(options);
+  const ngSwaggerGenCli = require('./ng-swagger-gen-cli.js');
+  ngSwaggerGenCli(options);
 }

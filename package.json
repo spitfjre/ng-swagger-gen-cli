@@ -10,7 +10,7 @@
     "url": "git+https://github.com/spitfjre/ng-swagger-gen-cli.git"
   },
   "scripts": {
-    "format": "prettier --write \"**/*{.ts,.js,.json,.css,.scss,.html,.md}\""
+    "format": "prettier --write \"**/*{.js,.json,.md}\""
   },
   "dependencies": {
     "argparse": "^1.0.10",
@@ -19,7 +19,7 @@
     "fs-extra": "^7.0.1",
     "listr": "^0.14.3",
     "md5": "^2.2.1",
-    "prettier": "1.16.4",
+    "prettier": "^1.17.0",
     "request": "^2.88.0",
     "request-promise": "^4.2.4"
   },
