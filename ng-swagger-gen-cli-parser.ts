@@ -1,9 +1,12 @@
 import { ArgumentParser } from 'argparse';
-import { Configuration, execute, Operation, Options } from './ng-swagger-gen-cli-executor';
-import { join } from 'path';
 import { existsSync, readFileSync } from 'fs';
+import { join } from 'path';
 
-export function parse(): void {
+import { Configuration, execute, Operation } from './ng-swagger-gen-cli-executor';
+
+const parseJSON = (file: any): any => JSON.parse(readFileSync(file, 'utf8'));
+
+export const parse = (): void => {
   const pkg: { version: string } = parseJSON(join(__dirname, 'package.json'));
 
   const argParser = new ArgumentParser({
@@ -14,18 +17,21 @@ export function parse(): void {
   argParser.addArgument(['-i', '--input'], {
     action: 'store',
     dest: 'config',
-    help: 'The swagger-gen CLI configuration file.',
+    help: 'The ng-swagger-gen-cli configuration file.',
+    required: true,
   });
   argParser.addArgument(['-o', '--operation'], {
     action: 'store',
     choices: ['compare', 'generate', 'update'],
     dest: 'operation',
     help: 'Desired operation that should be executed.',
+    required: true,
   });
   argParser.addArgument(['-s', '--selection'], {
     action: 'append',
     dest: 'selection',
     help: 'Selection of services, that should be operated on.',
+    required: false,
   });
 
   const args: { config: string; operation: Operation; selection: string[] | null } = argParser.parseArgs();
@@ -33,7 +39,7 @@ export function parse(): void {
   if (existsSync(args.config)) {
     const parsedConfig: { configurations: Configuration[] } = parseJSON(args.config);
 
-    run({
+    execute({
       configurations: parsedConfig.configurations,
       operation: args.operation,
       selection: !!args.selection ? args.selection : undefined,
@@ -41,12 +47,4 @@ export function parse(): void {
   } else {
     argParser.parseArgs(['--help']);
   }
-}
-
-function parseJSON(file: any): any {
-  return JSON.parse(readFileSync(file, 'utf8'));
-}
-
-function run(options: Options) {
-  execute(options);
-}
+};
