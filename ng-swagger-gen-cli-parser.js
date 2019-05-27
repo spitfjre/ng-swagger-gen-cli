@@ -31,7 +31,7 @@ exports.parse = function () {
         action: 'store',
         dest: 'branchName',
         help: 'The remote branch name to operate against.',
-        required: true,
+        required: false,
     });
     argParser.addArgument(['-i', '--input'], {
         action: 'store',
