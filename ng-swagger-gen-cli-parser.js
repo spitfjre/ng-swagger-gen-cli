@@ -5,12 +5,33 @@ var fs_1 = require("fs");
 var path_1 = require("path");
 var ng_swagger_gen_cli_executor_1 = require("./ng-swagger-gen-cli-executor");
 var parseJSON = function (file) { return JSON.parse(fs_1.readFileSync(file, 'utf8')); };
+var BRANCH_REPLACEMENT_TOKEN = '$BRANCH_NAME';
+var getDesiredUrl = function (configuration, branchName, branchNameMappings) {
+    if (branchName && configuration.urlBranchBase) {
+        if (branchNameMappings) {
+            var matchedMapping = branchNameMappings.find(function (mapping) { return branchName === mapping.provide; });
+            return configuration.urlBranchBase.replace(BRANCH_REPLACEMENT_TOKEN, matchedMapping ? matchedMapping.replace : branchName);
+        }
+        else {
+            return configuration.urlBranchBase.replace(BRANCH_REPLACEMENT_TOKEN, branchName);
+        }
+    }
+    else {
+        return configuration.defaultUrl;
+    }
+};
 exports.parse = function () {
     var pkg = parseJSON(path_1.join(__dirname, 'package.json'));
     var argParser = new argparse_1.ArgumentParser({
         addHelp: true,
         description: 'Swagger API client generator CLI for Angular 2+ projects.',
         version: pkg.version,
+    });
+    argParser.addArgument(['-b', '--branch'], {
+        action: 'store',
+        dest: 'branchName',
+        help: 'The remote branch name to operate against.',
+        required: true,
     });
     argParser.addArgument(['-i', '--input'], {
         action: 'store',
@@ -33,9 +54,14 @@ exports.parse = function () {
     });
     var args = argParser.parseArgs();
     if (fs_1.existsSync(args.config)) {
-        var parsedConfig = parseJSON(args.config);
+        var baseOptions_1 = parseJSON(args.config);
+        var configurations = baseOptions_1.configurations.map(function (configuration) { return ({
+            name: configuration.name,
+            swaggerGen: configuration.swaggerGen,
+            url: getDesiredUrl(configuration, args.branchName, baseOptions_1.branchNameMappings),
+        }); });
         ng_swagger_gen_cli_executor_1.execute({
-            configurations: parsedConfig.configurations,
+            configurations: configurations,
             operation: args.operation,
             selection: !!args.selection ? args.selection : undefined,
         });

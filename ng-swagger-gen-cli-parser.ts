@@ -6,6 +6,48 @@ import { Configuration, execute, Operation } from './ng-swagger-gen-cli-executor
 
 const parseJSON = (file: any): any => JSON.parse(readFileSync(file, 'utf8'));
 
+const BRANCH_REPLACEMENT_TOKEN = '$BRANCH_NAME';
+
+const getDesiredUrl = (
+  configuration: BaseConfiguration,
+  branchName?: string,
+  branchNameMappings?: BranchNameMapping[],
+): string => {
+  if (branchName && configuration.urlBranchBase) {
+    if (branchNameMappings) {
+      const matchedMapping: BranchNameMapping | undefined = branchNameMappings.find(
+        (mapping: BranchNameMapping) => branchName === mapping.provide,
+      );
+
+      return configuration.urlBranchBase.replace(
+        BRANCH_REPLACEMENT_TOKEN,
+        matchedMapping ? matchedMapping.replace : branchName,
+      );
+    } else {
+      return configuration.urlBranchBase.replace(BRANCH_REPLACEMENT_TOKEN, branchName);
+    }
+  } else {
+    return configuration.defaultUrl;
+  }
+};
+
+interface BaseOptions {
+  branchNameMappings?: BranchNameMapping[];
+  configurations: BaseConfiguration[];
+}
+
+interface BranchNameMapping {
+  provide: string;
+  replace: string;
+}
+
+interface BaseConfiguration {
+  defaultUrl: string;
+  name: string;
+  swaggerGen: string;
+  urlBranchBase?: string;
+}
+
 export const parse = (): void => {
   const pkg: { version: string } = parseJSON(join(__dirname, 'package.json'));
 
@@ -13,6 +55,12 @@ export const parse = (): void => {
     addHelp: true,
     description: 'Swagger API client generator CLI for Angular 2+ projects.',
     version: pkg.version,
+  });
+  argParser.addArgument(['-b', '--branch'], {
+    action: 'store',
+    dest: 'branchName',
+    help: 'The remote branch name to operate against.',
+    required: true,
   });
   argParser.addArgument(['-i', '--input'], {
     action: 'store',
@@ -34,13 +82,23 @@ export const parse = (): void => {
     required: false,
   });
 
-  const args: { config: string; operation: Operation; selection: string[] | null } = argParser.parseArgs();
+  const args: {
+    branchName?: string;
+    config: string;
+    operation: Operation;
+    selection: string[] | null;
+  } = argParser.parseArgs();
 
   if (existsSync(args.config)) {
-    const parsedConfig: { configurations: Configuration[] } = parseJSON(args.config);
+    const baseOptions: BaseOptions = parseJSON(args.config);
+    const configurations: Configuration[] = baseOptions.configurations.map((configuration: BaseConfiguration) => ({
+      name: configuration.name,
+      swaggerGen: configuration.swaggerGen,
+      url: getDesiredUrl(configuration, args.branchName, baseOptions.branchNameMappings),
+    }));
 
     execute({
-      configurations: parsedConfig.configurations,
+      configurations: configurations,
       operation: args.operation,
       selection: !!args.selection ? args.selection : undefined,
     });
