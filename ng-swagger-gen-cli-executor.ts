@@ -64,6 +64,8 @@ const presentCompareResult = (apis: Configuration[], differentApis: ApiDifferenc
     console.log(`\nPlease run ${allUpdateCommand} to update all services`);
     console.log(`or`);
     console.log(`run ${specificUpdateCommand} to update only changed services.\n`);
+
+    process.exit(1);
   }
 };
 
