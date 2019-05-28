@@ -94,7 +94,13 @@ const compare = (apis: Configuration[]): void => {
     { concurrent: false, exitOnError: false },
   );
 
-  tasks.run().then(() => presentCompareResult(apis, differentApis), () => presentCompareResult(apis, differentApis));
+  tasks.run().then(
+    () => presentCompareResult(apis, differentApis),
+    () => {
+      presentCompareResult(apis, differentApis);
+      process.exit(1);
+    },
+  );
 };
 
 const generate = (apis: Configuration[]): void => {
@@ -106,7 +112,12 @@ const generate = (apis: Configuration[]): void => {
     { concurrent: false, exitOnError: false },
   );
 
-  tasks.run().then(() => {}, () => {});
+  tasks.run().then(
+    () => {},
+    () => {
+      process.exit(1);
+    },
+  );
 };
 
 const update = (apis: Configuration[]): void => {
@@ -136,7 +147,12 @@ const update = (apis: Configuration[]): void => {
     { concurrent: false, exitOnError: false },
   );
 
-  tasks.run().then(() => {}, () => {});
+  tasks.run().then(
+    () => {},
+    () => {
+      process.exit(1);
+    },
+  );
 };
 
 const executeOperation = (operation: Operation, configurations: Configuration[]): void => {

@@ -15,7 +15,7 @@
     "indent": [true, "spaces"],
     "interface-over-type-literal": true,
     "label-position": true,
-    "max-file-line-count": [true, 200],
+    "max-file-line-count": [true, 250],
     "max-line-length": [true, 120],
     "member-access": [true, "no-public"],
     "member-ordering": [

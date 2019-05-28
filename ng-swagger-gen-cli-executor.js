@@ -69,14 +69,19 @@ var compare = function (apis) {
             });
         },
     }); }), { concurrent: false, exitOnError: false });
-    tasks.run().then(function () { return presentCompareResult(apis, differentApis); }, function () { return presentCompareResult(apis, differentApis); });
+    tasks.run().then(function () { return presentCompareResult(apis, differentApis); }, function () {
+        presentCompareResult(apis, differentApis);
+        process.exit(1);
+    });
 };
 var generate = function (apis) {
     var tasks = new listr_1.default(apis.map(function (api) { return ({
         title: "Generate " + api.name,
         task: function () { return execa_1.default.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(); },
     }); }), { concurrent: false, exitOnError: false });
-    tasks.run().then(function () { }, function () { });
+    tasks.run().then(function () { }, function () {
+        process.exit(1);
+    });
 };
 var update = function (apis) {
     var tasks = new listr_1.default(apis.map(function (api) { return ({
@@ -100,7 +105,9 @@ var update = function (apis) {
             ], { concurrent: false, exitOnError: true });
         },
     }); }), { concurrent: false, exitOnError: false });
-    tasks.run().then(function () { }, function () { });
+    tasks.run().then(function () { }, function () {
+        process.exit(1);
+    });
 };
 var executeOperation = function (operation, configurations) {
     switch (operation) {
