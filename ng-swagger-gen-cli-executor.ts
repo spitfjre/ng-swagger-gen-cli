@@ -89,7 +89,7 @@ const compare = (apis: Configuration[]): void => {
             subset(currentObject.paths, latestObject.paths) &&
             subset(currentObject.definitions, latestObject.definitions);
 
-          if (currentIsSubsetOfLatest) {
+          if (!currentIsSubsetOfLatest) {
             differentApis.push({
               apiName: api.name,
               currentVersion: currentObject.info.version,
