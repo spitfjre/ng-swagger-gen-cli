@@ -2,8 +2,9 @@ import chalk from 'chalk';
 import execa from 'execa';
 import { readFileSync, writeFileSync } from 'fs';
 import listr from 'listr';
-import md5 from 'md5';
 import requestPromise from 'request-promise-native';
+// tslint:disable-next-line:no-require-imports
+const subset = require('json-subset');
 
 export interface Configuration {
   name: string;
@@ -81,14 +82,18 @@ const compare = (apis: Configuration[]): void => {
           const swaggerPath: string = JSON.parse(currentSwaggerGenJson).swagger;
           const currentJson = readFileSync(swaggerPath, 'utf8');
 
-          const currentHash = md5(currentJson);
-          const fetchedHash = md5(data);
+          const currentObject: any = JSON.parse(currentJson);
+          const latestObject: any = JSON.parse(data);
 
-          if (fetchedHash !== currentHash) {
+          const currentIsSubsetOfLatest: boolean =
+            subset(currentObject.paths, latestObject.paths) &&
+            subset(currentObject.definitions, latestObject.definitions);
+
+          if (currentIsSubsetOfLatest) {
             differentApis.push({
               apiName: api.name,
-              currentVersion: JSON.parse(currentJson).info.version,
-              latestVersion: JSON.parse(data).info.version,
+              currentVersion: currentObject.info.version,
+              latestVersion: latestObject.info.version,
             });
           }
         }),

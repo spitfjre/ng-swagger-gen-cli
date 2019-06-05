@@ -26,7 +26,7 @@ Please, run the `ng-swagger-gen-cli` with the `--help` argument to view all avai
 
 These are the currently supported operations:
 
-- **compare**: Compares the local swagger descriptor with latest remote one and reports which services are out of sync.
+- **compare**: Compares the local swagger descriptor with latest remote one and reports which services are out of sync. This is done via configuration subsets.
 - **generate**: Generates the files of the local swagger descriptor via `ng-swagger-gen`.
 - **update**: Updates the local swagger descriptor with latest remote one and generates the files of the local swagger descriptor via `ng-swagger-gen`.
 

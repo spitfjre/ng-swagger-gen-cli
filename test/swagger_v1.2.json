@@ -1,0 +1,588 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "This REST API provides operations regarding bank details.",
+    "version": "1.1",
+    "title": "Bank REST API",
+    "contact": {
+      "name": "SVG Zentrale",
+      "url": "https://www.svg.de",
+      "email": "it@svg.de"
+    }
+  },
+  "host": "accountmasterdata.default-testing.f8.mysvg24.de",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "Bank details",
+      "description": "Bank details operations"
+    },
+    {
+      "name": "Bank details types",
+      "description": "List all bank details types"
+    },
+    {
+      "name": "Mandate status",
+      "description": "List all mandate status"
+    },
+    {
+      "name": "Mandate types",
+      "description": "List all mandate types"
+    },
+    {
+      "name": "default",
+      "description": "default operations (e.g. health and version"
+    }
+  ],
+  "paths": {
+    "/bankdetails": {
+      "get": {
+        "tags": ["Bank details"],
+        "summary": "Get a list of account master data entries",
+        "operationId": "getBankDetailsUsingGET",
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "name": "portalUid",
+            "in": "query",
+            "description": "the customers portal uid",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Response«BankDetails»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "post": {
+        "tags": ["Bank details"],
+        "summary": "Create a account master data entry",
+        "operationId": "createBankDetailsUsingPOST",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "bankDetailsDto",
+            "description": "the account master data dto to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/bankdetails/mandate/status": {
+      "get": {
+        "tags": ["Mandate status"],
+        "summary": "Get a list of mandate status types",
+        "operationId": "listUsingGET_1",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Response«MandateStatusDto»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/bankdetails/mandate/types": {
+      "get": {
+        "tags": ["Mandate types"],
+        "summary": "Get a list of mandate types",
+        "operationId": "listUsingGET_2",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Response«MandateType»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/bankdetails/types": {
+      "get": {
+        "tags": ["Bank details types"],
+        "summary": "Get a list of bank details types",
+        "operationId": "listUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/Response«BankDetailsType»"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/bankdetails/{id}": {
+      "put": {
+        "tags": ["Bank details"],
+        "summary": "Update one account master data entry",
+        "operationId": "updateBankDetailsUsingPUT",
+        "consumes": ["application/json"],
+        "produces": ["*/*"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "bankDetailsDto",
+            "description": "the account master data dto to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the database primary key of the account master data entry",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      },
+      "delete": {
+        "tags": ["Bank details"],
+        "summary": "Delete a bank connection",
+        "operationId": "deleteBankDetailsUsingDELETE",
+        "produces": ["*/*", "application/json"],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the account master data bo id to delete",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          },
+          {
+            "name": "portalUid",
+            "in": "query",
+            "description": "the portal uid of the customer",
+            "required": true,
+            "type": "string",
+            "allowEmptyValue": false
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          },
+          "204": {
+            "description": "No Content"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/bankdetails/{id}/mandatestatus": {
+      "put": {
+        "tags": ["Bank details"],
+        "summary": "Update the mandate status of an account master data entry",
+        "operationId": "updateMandateStatusUsingPUT",
+        "consumes": ["application/json"],
+        "produces": ["*/*", "application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "bankDetailsDto",
+            "description": "the account master data dto to update",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "description": "the database primary key of the account master data entry",
+            "required": true,
+            "type": "integer",
+            "format": "int64"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "$ref": "#/definitions/BankDetails"
+            }
+          },
+          "201": {
+            "description": "Created"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    },
+    "/version": {
+      "get": {
+        "tags": ["default"],
+        "summary": "getVersion",
+        "operationId": "getVersionUsingGET",
+        "produces": ["*/*"],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "type": "string"
+            }
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        },
+        "deprecated": false
+      }
+    }
+  },
+  "definitions": {
+    "BankDetails": {
+      "type": "object",
+      "properties": {
+        "accountHolder": {
+          "type": "string",
+          "description": "name of the account holder"
+        },
+        "accountNumber": {
+          "type": "string",
+          "description": "account number"
+        },
+        "bankCode": {
+          "type": "string",
+          "description": "bankcode of bank details"
+        },
+        "bic": {
+          "type": "string",
+          "description": "bank identification code"
+        },
+        "customerId": {
+          "type": "integer",
+          "format": "int64",
+          "description": "customer id of the customer who owns the account"
+        },
+        "iban": {
+          "type": "string",
+          "description": "international bank account number"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "id of bank details"
+        },
+        "mandateNumber": {
+          "type": "string",
+          "description": "auto generated number of the mandate"
+        },
+        "mandateStatus": {
+          "type": "integer",
+          "format": "int64",
+          "description": "status of the mandate request"
+        },
+        "mandateType": {
+          "type": "integer",
+          "format": "int64",
+          "description": "type of the mandate"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64",
+          "description": "type of bank details"
+        }
+      },
+      "title": "BankDetails",
+      "description": "account master data"
+    },
+    "BankDetailsType": {
+      "type": "object",
+      "properties": {
+        "fibuNumber": {
+          "type": "string",
+          "description": "fibu number of the bank details type"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "id of the bank details type"
+        },
+        "text": {
+          "type": "string",
+          "description": "description of the bank details type"
+        }
+      },
+      "title": "BankDetailsType",
+      "description": "type of an account master data"
+    },
+    "MandateStatusDto": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "id of the mandate status"
+        },
+        "status": {
+          "type": "string",
+          "description": "human readable short name of the mandate status"
+        },
+        "statusDescription": {
+          "type": "string",
+          "description": "description of the status."
+        }
+      },
+      "title": "MandateStatusDto",
+      "description": "status of the mandate"
+    },
+    "MandateType": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string",
+          "description": "description of the mandate type"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "description": "id of the mandate type"
+        }
+      },
+      "title": "MandateType",
+      "description": "type of the mandate"
+    },
+    "ResponseDirectory": {
+      "type": "object",
+      "properties": {
+        "next": {
+          "type": "string"
+        },
+        "prev": {
+          "type": "string"
+        },
+        "self": {
+          "$ref": "#/definitions/Self"
+        }
+      },
+      "title": "ResponseDirectory"
+    },
+    "ResponseMeta": {
+      "type": "object",
+      "properties": {
+        "totalCount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "ResponseMeta"
+    },
+    "Response«BankDetailsType»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankDetailsType"
+          }
+        },
+        "directory": {
+          "$ref": "#/definitions/ResponseDirectory"
+        },
+        "meta": {
+          "$ref": "#/definitions/ResponseMeta"
+        }
+      },
+      "title": "Response«BankDetailsType»"
+    },
+    "Response«BankDetails»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BankDetails"
+          }
+        },
+        "directory": {
+          "$ref": "#/definitions/ResponseDirectory"
+        },
+        "meta": {
+          "$ref": "#/definitions/ResponseMeta"
+        }
+      },
+      "title": "Response«BankDetails»"
+    },
+    "Response«MandateStatusDto»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MandateStatusDto"
+          }
+        },
+        "directory": {
+          "$ref": "#/definitions/ResponseDirectory"
+        },
+        "meta": {
+          "$ref": "#/definitions/ResponseMeta"
+        }
+      },
+      "title": "Response«MandateStatusDto»"
+    },
+    "Response«MandateType»": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/MandateType"
+          }
+        },
+        "directory": {
+          "$ref": "#/definitions/ResponseDirectory"
+        },
+        "meta": {
+          "$ref": "#/definitions/ResponseMeta"
+        }
+      },
+      "title": "Response«MandateType»"
+    },
+    "Self": {
+      "type": "object",
+      "properties": {
+        "href": {
+          "type": "string"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "Self"
+    }
+  }
+}

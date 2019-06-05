@@ -7,8 +7,9 @@ var chalk_1 = __importDefault(require("chalk"));
 var execa_1 = __importDefault(require("execa"));
 var fs_1 = require("fs");
 var listr_1 = __importDefault(require("listr"));
-var md5_1 = __importDefault(require("md5"));
 var request_promise_native_1 = __importDefault(require("request-promise-native"));
+// tslint:disable-next-line:no-require-imports
+var subset = require('json-subset');
 var findApi = function (apis, differentApi) {
     var foundApi = apis.find(function (api) { return api.name === differentApi.apiName; });
     return [foundApi, differentApi];
@@ -58,13 +59,15 @@ var compare = function (apis) {
                 var currentSwaggerGenJson = fs_1.readFileSync(api.swaggerGen, 'utf8');
                 var swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
                 var currentJson = fs_1.readFileSync(swaggerPath, 'utf8');
-                var currentHash = md5_1.default(currentJson);
-                var fetchedHash = md5_1.default(data);
-                if (fetchedHash !== currentHash) {
+                var currentObject = JSON.parse(currentJson);
+                var latestObject = JSON.parse(data);
+                var currentIsSubsetOfLatest = subset(currentObject.paths, latestObject.paths) &&
+                    subset(currentObject.definitions, latestObject.definitions);
+                if (currentIsSubsetOfLatest) {
                     differentApis.push({
                         apiName: api.name,
-                        currentVersion: JSON.parse(currentJson).info.version,
-                        latestVersion: JSON.parse(data).info.version,
+                        currentVersion: currentObject.info.version,
+                        latestVersion: latestObject.info.version,
                     });
                 }
             });
