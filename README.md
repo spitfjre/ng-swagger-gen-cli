@@ -1,4 +1,4 @@
-## ng-swagger-gen-cli: CLI for ng-swagger-gen
+## ng-swagger-gen-cli: CLI for ng-swagger-gen [![npm version](https://badge.fury.io/js/ng-swagger-gen-cli.svg)](https://badge.fury.io/js/ng-swagger-gen-cli)
 
 This project is a npm module that provides management operations of api services via [ng-swagger-gen](https://github.com/cyclosproject/ng-swagger-gen).
 
