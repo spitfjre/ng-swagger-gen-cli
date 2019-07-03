@@ -8,8 +8,6 @@ var execa_1 = __importDefault(require("execa"));
 var fs_1 = require("fs");
 var listr_1 = __importDefault(require("listr"));
 var request_promise_native_1 = __importDefault(require("request-promise-native"));
-// tslint:disable-next-line:no-require-imports
-var subset = require('json-subset');
 var findApi = function (apis, differentApi) {
     var foundApi = apis.find(function (api) { return api.name === differentApi.apiName; });
     return [foundApi, differentApi];
@@ -61,14 +59,10 @@ var compare = function (apis) {
                 var currentJson = fs_1.readFileSync(swaggerPath, 'utf8');
                 var currentObject = JSON.parse(currentJson);
                 var latestObject = JSON.parse(data);
-                var currentIsSubsetOfLatest = subset(currentObject.paths, latestObject.paths) &&
-                    subset(currentObject.definitions, latestObject.definitions);
-                if (!currentIsSubsetOfLatest) {
-                    differentApis.push({
-                        apiName: api.name,
-                        currentVersion: currentObject.info.version,
-                        latestVersion: latestObject.info.version,
-                    });
+                var currentVersion = currentObject.info.version;
+                var latestVersion = latestObject.info.version;
+                if (currentVersion !== latestVersion) {
+                    differentApis.push({ apiName: api.name, currentVersion: currentVersion, latestVersion: latestVersion });
                 }
             });
         },
