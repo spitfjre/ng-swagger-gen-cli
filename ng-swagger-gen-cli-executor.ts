@@ -3,8 +3,6 @@ import execa from 'execa';
 import { readFileSync, writeFileSync } from 'fs';
 import listr from 'listr';
 import requestPromise from 'request-promise-native';
-// tslint:disable-next-line:no-require-imports
-const subset = require('json-subset');
 
 export interface Configuration {
   name: string;
@@ -85,16 +83,11 @@ const compare = (apis: Configuration[]): void => {
           const currentObject: any = JSON.parse(currentJson);
           const latestObject: any = JSON.parse(data);
 
-          const currentIsSubsetOfLatest: boolean =
-            subset(currentObject.paths, latestObject.paths) &&
-            subset(currentObject.definitions, latestObject.definitions);
+          const currentVersion: string = currentObject.info.version;
+          const latestVersion: string = latestObject.info.version;
 
-          if (!currentIsSubsetOfLatest) {
-            differentApis.push({
-              apiName: api.name,
-              currentVersion: currentObject.info.version,
-              latestVersion: latestObject.info.version,
-            });
+          if (currentVersion !== latestVersion) {
+            differentApis.push({ apiName: api.name, currentVersion, latestVersion });
           }
         }),
     })),

@@ -1,6 +1,6 @@
 {
   "name": "ng-swagger-gen-cli",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "license": "MIT",
   "author": "Maximilian Aulbach",
   "description": "A CLI tool for swagger 2.0 codegen for Angular",
@@ -19,7 +19,6 @@
     "chalk": "^2.4.2",
     "execa": "^1.0.0",
     "fs-extra": "^8.0.1",
-    "json-subset": "^1.0.2",
     "listr": "^0.14.3",
     "prettier": "^1.17.1",
     "request": "^2.88.0",
