@@ -107,7 +107,7 @@ const generate = (apis: Configuration[]): void => {
   const tasks = new listr(
     apis.map((api: Configuration) => ({
       title: `Generate ${api.name}`,
-      task: () => execa.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
+      task: () => execa('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
     })),
     { concurrent: false, exitOnError: false },
   );
@@ -138,7 +138,7 @@ const update = (apis: Configuration[]): void => {
             },
             {
               title: 'Generating classes',
-              task: () => execa.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
+              task: () => execa('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(),
             },
           ],
           { concurrent: false, exitOnError: true },

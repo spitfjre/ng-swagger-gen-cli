@@ -18,7 +18,7 @@ Where:
   file.
 - `operation` is the operation that should be executed. There are three operations permitted: `compare`, `generate` and `update`.
 - `selection` is an optional argument, that lets you execute operations on a selected service. If your selection contains more than one service, you have to provide the flag multiple times. For example: `-s service1 -s service2`
-- `branchName` is an optional argument, that lets you execute operations against services of a given branch.
+- `local` is an optional argument to specify, whether to execute operations against a remote service url or the local url.
 
 Please, run the `ng-swagger-gen-cli` with the `--help` argument to view all available command line arguments.
 
@@ -44,11 +44,11 @@ of the JSON schema on `./node_modules/ng-swagger-gen-cli/ng-swagger-gen-cli-sche
 ### Configuration file reference
 
 The supported properties in the JSON file are:
-- `provide` & `replace`: The `branchNameMappings` allow to map angular repository branch names to given remote swagger deployment targets.
+
+- `defaultLocalUrl`: The local (default) url endpoint of the swagger descriptor. This is needed for comparing local and remote json files and for updating the local file.
 - `defaultUrl`: The (default) url endpoint of the swagger descriptor. This is needed for comparing local and remote json files and for updating the local file.
 - `name`: The name of the service. This is just needed for reference and does not affect anything else.
 - `swaggerGen`: The relative location of the `ng-swagger-gen` configuration file, that describes how the files should be generated for the given service.
-- `urlBranchBase`: The (optional) base url endpoint for build branches of the swagger descriptor. This needs to contain the `$BRANCH_NAME` replacement token.
 
 ### Configuration file example
 
@@ -57,18 +57,12 @@ The following is an example of a configuration file:
 ```json
 {
   "$schema": "./node_modules/ng-swagger-gen-cli/ng-swagger-gen-cli-schema.json",
-  "branchNameMappings": [
-    {
-      "provide": "master",
-      "replace": "staging"
-    }
-  ],
+  "defaultLocalUrl": "http://localhost:8080/v2/api-docs",
   "configurations": [
     {
       "defaultUrl": "http://url/to/swagger/v2/api-docs",
       "name": "auth",
-      "swaggerGen": "./path/to/ng-swagger-gen/file.json",
-      "urlBranchBase": "http://url/to/swagger-$BRANCH_NAME/v2/api-docs"
+      "swaggerGen": "./path/to/ng-swagger-gen/file.json"
     }
   ]
 }

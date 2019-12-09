@@ -8,19 +8,9 @@
     "$schema": {
       "type": "string"
     },
-    "branchNameMappings": {
-      "type": "array",
-      "required": ["provide", "replace"],
-      "properties": {
-        "provide": {
-          "description": "The provided branch name.",
-          "type": "string"
-        },
-        "replace": {
-          "description": "The replacement name.",
-          "type": "string"
-        }
-      }
+    "defaultLocalUrl": {
+      "description": "The default local development URL of the swagger descriptor in JSON format.",
+      "type": "string"
     },
     "configurations": {
       "type": "array",
@@ -36,10 +26,6 @@
         },
         "swaggerGen": {
           "description": "The location of the ng-swagger-gen file.",
-          "type": "string"
-        },
-        "urlBranchBase": {
-          "description": "The branch URL base of the swagger descriptor in JSON format.",
           "type": "string"
         }
       }

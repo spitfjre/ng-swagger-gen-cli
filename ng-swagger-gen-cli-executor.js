@@ -75,7 +75,7 @@ var compare = function (apis) {
 var generate = function (apis) {
     var tasks = new listr_1.default(apis.map(function (api) { return ({
         title: "Generate " + api.name,
-        task: function () { return execa_1.default.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(); },
+        task: function () { return execa_1.default('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(); },
     }); }), { concurrent: false, exitOnError: false });
     tasks.run().then(function () { }, function () {
         process.exit(1);
@@ -98,7 +98,7 @@ var update = function (apis) {
                 },
                 {
                     title: 'Generating classes',
-                    task: function () { return execa_1.default.stdout('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(); },
+                    task: function () { return execa_1.default('./node_modules/.bin/ng-swagger-gen', ['-c', api.swaggerGen]).then(); },
                 },
             ], { concurrent: false, exitOnError: true });
         },
