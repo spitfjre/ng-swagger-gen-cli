@@ -9,7 +9,7 @@ In your project, run:
 ```bash
 cd <your_angular_app_dir>
 npm install ng-swagger-gen-cli --save-dev
-node_modules/.bin/ng-swagger-gen-cli -i <path_to_ng_swagger_cli_json> -o operation -s selection -b branchName
+node_modules/.bin/ng-swagger-gen-cli -i <path_to_ng_swagger_cli_json> -o operation -s selection -l
 ```
 
 Where:
