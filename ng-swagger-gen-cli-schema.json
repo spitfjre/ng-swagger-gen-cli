@@ -8,10 +8,6 @@
     "$schema": {
       "type": "string"
     },
-    "defaultLocalUrl": {
-      "description": "The default local development URL of the swagger descriptor in JSON format.",
-      "type": "string"
-    },
     "configurations": {
       "type": "array",
       "required": ["defaultUrl", "name", "swaggerGen"],

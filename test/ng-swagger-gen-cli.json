@@ -1,0 +1,11 @@
+{
+  "$schema": "../ng-swagger-gen-cli-schema.json",
+  "defaultLocalUrl": "http://localhost:8080/v2/api-docs",
+  "configurations": [
+    {
+      "defaultUrl": "https://petstore.swagger.io/v2/swagger.json",
+      "name": "test",
+      "swaggerGen": "./test/ng-swagger-gen.json"
+    }
+  ]
+}

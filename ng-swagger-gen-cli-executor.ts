@@ -1,8 +1,7 @@
-import chalk from 'chalk';
 import execa from 'execa';
 import { readFileSync, writeFileSync } from 'fs';
+import got from 'got';
 import listr from 'listr';
-import requestPromise from 'request-promise-native';
 
 export interface Configuration {
   name: string;
@@ -10,98 +9,13 @@ export interface Configuration {
   url: string;
 }
 
-export type Operation = 'compare' | 'generate' | 'update';
+export type Operation = 'generate' | 'update';
 
 export interface Options {
   configurations: Configuration[];
   operation: Operation;
   selection?: string[];
 }
-
-interface ApiDifference {
-  apiName: string;
-  currentVersion: string;
-  latestVersion: string;
-}
-
-const findApi = (apis: Configuration[], differentApi: ApiDifference): [Configuration | undefined, ApiDifference] => {
-  const foundApi: Configuration | undefined = apis.find((api: Configuration) => api.name === differentApi.apiName);
-  return [foundApi, differentApi] as [Configuration | undefined, ApiDifference];
-};
-
-const presentCompareResult = (apis: Configuration[], differentApis: ApiDifference[]): void => {
-  const filteredApis: [Configuration, ApiDifference][] = differentApis
-    .map((differentApi: ApiDifference) => findApi(apis, differentApi))
-    .filter(([api]: [Configuration | undefined, ApiDifference]) => api !== undefined)
-    .map((filteredApi: [Configuration | undefined, ApiDifference]) => filteredApi as [Configuration, ApiDifference]);
-
-  if (filteredApis.length === 0) {
-    console.log(`\nAll (requested) services are in sync.`);
-  } else {
-    console.log('');
-
-    filteredApis.forEach(([api, compareResult]: [Configuration, ApiDifference]) => {
-      const apiName: string = chalk.blue.bold(api.name);
-      const apiUrl: string = chalk.green.bold(api.url);
-      const currentVersion: string = chalk.red.bold(compareResult.currentVersion);
-      const latestVersion: string = chalk.red.bold(compareResult.latestVersion);
-
-      console.log(`${apiName}@${apiUrl} changed (${currentVersion}->${latestVersion})`);
-    });
-
-    const allUpdateCommand: string = chalk.yellow.bold(
-      '../node_modules/.bin/ng-swagger-gen-cli -i ng-swagger-gen-cli.json -o update',
-    );
-    const apiNameParameters: string = filteredApis
-      .map(([api]: [Configuration, ApiDifference]) => api.name)
-      .map((apiName: string) => `-s ${apiName}`)
-      .join(' ');
-    const specificUpdateCommand: string = chalk.yellow.bold(
-      `../node_modules/.bin/ng-swagger-gen-cli -i ng-swagger-gen-cli.json -o update ${apiNameParameters}`,
-    );
-
-    console.log(`\nPlease run ${allUpdateCommand} to update all services`);
-    console.log(`or`);
-    console.log(`run ${specificUpdateCommand} to update only changed services.\n`);
-
-    process.exit(1);
-  }
-};
-
-const compare = (apis: Configuration[]): void => {
-  const differentApis: ApiDifference[] = [];
-
-  const tasks = new listr(
-    apis.map((api: Configuration) => ({
-      title: `Compare ${api.name}`,
-      task: () =>
-        requestPromise(api.url).then((data: string) => {
-          const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
-          const swaggerPath: string = JSON.parse(currentSwaggerGenJson).swagger;
-          const currentJson = readFileSync(swaggerPath, 'utf8');
-
-          const currentObject: any = JSON.parse(currentJson);
-          const latestObject: any = JSON.parse(data);
-
-          const currentVersion: string = currentObject.info.version;
-          const latestVersion: string = latestObject.info.version;
-
-          if (currentVersion !== latestVersion) {
-            differentApis.push({ apiName: api.name, currentVersion, latestVersion });
-          }
-        }),
-    })),
-    { concurrent: false, exitOnError: false },
-  );
-
-  tasks.run().then(
-    () => presentCompareResult(apis, differentApis),
-    () => {
-      presentCompareResult(apis, differentApis);
-      process.exit(1);
-    },
-  );
-};
 
 const generate = (apis: Configuration[]): void => {
   const tasks = new listr(
@@ -114,9 +28,7 @@ const generate = (apis: Configuration[]): void => {
 
   tasks.run().then(
     () => {},
-    () => {
-      process.exit(1);
-    },
+    () => process.exit(1),
   );
 };
 
@@ -130,10 +42,10 @@ const update = (apis: Configuration[]): void => {
             {
               title: 'Fetch swagger json',
               task: () =>
-                requestPromise(api.url).then((data: any) => {
+                got(api.url).then((data: any) => {
                   const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
                   const swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
-                  writeFileSync(swaggerPath, data);
+                  writeFileSync(swaggerPath, data.body);
                 }),
             },
             {
@@ -149,17 +61,12 @@ const update = (apis: Configuration[]): void => {
 
   tasks.run().then(
     () => {},
-    () => {
-      process.exit(1);
-    },
+    () => process.exit(1),
   );
 };
 
 const executeOperation = (operation: Operation, configurations: Configuration[]): void => {
   switch (operation) {
-    case 'compare':
-      compare(configurations);
-      break;
     case 'generate':
       generate(configurations);
       break;
