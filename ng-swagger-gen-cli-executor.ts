@@ -4,12 +4,13 @@ import got from 'got';
 import listr from 'listr';
 
 export interface Configuration {
+  defaultLocalUrl: string;
+  defaultUrl: string;
   name: string;
   swaggerGen: string;
-  url: string;
 }
 
-export type Operation = 'generate' | 'update';
+export type Operation = 'generate' | 'update' | 'local-update';
 
 export interface Options {
   configurations: Configuration[];
@@ -32,7 +33,7 @@ const generate = (apis: Configuration[]): void => {
   );
 };
 
-const update = (apis: Configuration[]): void => {
+const update = (apis: Configuration[], local: boolean): void => {
   const tasks = new listr(
     apis.map((api: Configuration) => ({
       title: `Update ${api.name}`,
@@ -42,7 +43,7 @@ const update = (apis: Configuration[]): void => {
             {
               title: 'Fetch swagger json',
               task: () =>
-                got(api.url).then((data: any) => {
+                got(local ? api.defaultLocalUrl : api.defaultUrl).then((data: any) => {
                   const currentSwaggerGenJson = readFileSync(api.swaggerGen, 'utf8');
                   const swaggerPath = JSON.parse(currentSwaggerGenJson).swagger;
                   writeFileSync(swaggerPath, data.body);
@@ -71,7 +72,10 @@ const executeOperation = (operation: Operation, configurations: Configuration[])
       generate(configurations);
       break;
     case 'update':
-      update(configurations);
+      update(configurations, false);
+      break;
+    case 'local-update':
+      update(configurations, true);
       break;
     default:
       console.error('No valid operation was specified');
@@ -90,7 +94,7 @@ export const execute = (options: Options): void => {
     process.exit(1);
   }
 
-  if (options.selection !== undefined) {
+  if (options.selection) {
     const filteredConfigurations: Configuration[] = options.configurations.filter(
       (configuration: Configuration) => (options.selection as string[]).indexOf(configuration.name) !== -1,
     );

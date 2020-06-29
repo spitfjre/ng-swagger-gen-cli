@@ -10,8 +10,12 @@
     },
     "configurations": {
       "type": "array",
-      "required": ["defaultUrl", "name", "swaggerGen"],
+      "required": ["defaultLocalUrl", "defaultUrl", "name", "swaggerGen"],
       "properties": {
+        "defaultLocalUrl": {
+          "description": "The default local URL of the swagger descriptor in JSON format.",
+          "type": "string"
+        },
         "defaultUrl": {
           "description": "The default URL of the swagger descriptor in JSON format.",
           "type": "string"

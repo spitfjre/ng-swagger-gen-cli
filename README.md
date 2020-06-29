@@ -16,7 +16,7 @@ Where:
 
 - `PATH_TO_NG_SWAGGER_CLI_JSON` is the relative path to the ng-swagger-cli JSON
   file.
-- `OPERATION` is the operation that should be executed. There are three operations permitted: `generate` and `update`.
+- `OPERATION` is the operation that should be executed. There are three operations permitted: `generate`, `update` and `update-local`.
 - `SELECTION` is an optional argument, that lets you execute operations on a selected service. If your selection contains more than one service, you have to provide the flag multiple times. For example: `-s service1 -s service2`
 
 Please, run the `ng-swagger-gen-cli` with the `--help` argument to view all available command line arguments.
@@ -27,6 +27,7 @@ These are the currently supported operations:
 
 - **generate**: Generates the files of the local swagger descriptor via `ng-swagger-gen`.
 - **update**: Updates the local swagger descriptor with the latest remote one and generates the files of the local swagger descriptor via `ng-swagger-gen`.
+- **local-update**: Updates the local swagger descriptor with the latest `local` remote one and generates the files of the local swagger descriptor via `ng-swagger-gen`.
 
 ## Configuration file
 
@@ -43,6 +44,7 @@ of the JSON schema on `./node_modules/ng-swagger-gen-cli/ng-swagger-gen-cli-sche
 
 The supported properties in the JSON file are:
 
+- `defaultLocalUrl`: The (default) local url endpoint of the swagger descriptor. This is needed for comparing local and remote json files and for updating the local file.
 - `defaultUrl`: The (default) url endpoint of the swagger descriptor. This is needed for comparing local and remote json files and for updating the local file.
 - `name`: The name of the service. This is just needed for reference and does not affect anything else.
 - `swaggerGen`: The relative location of the `ng-swagger-gen` configuration file, that describes how the files should be generated for the given service.
@@ -56,6 +58,7 @@ The following is an example of a configuration file:
   "$schema": "./node_modules/ng-swagger-gen-cli/ng-swagger-gen-cli-schema.json",
   "configurations": [
     {
+      "defaultLocalUrl": "http://localhost:8080",
       "defaultUrl": "http://url/to/swagger/v2/api-docs",
       "name": "auth",
       "swaggerGen": "./path/to/ng-swagger-gen/file.json"
@@ -69,7 +72,7 @@ The following is an example of a configuration file:
 Regardless if your Angular project was generated or is managed by
 [Angular CLI](https://cli.angular.io/), or you have started your project with
 some other seed (for example, using [webpack](https://webpack.js.org/)
-directly), you can setup a scripts block.
+directly), you can set up a scripts block.
 
 To do so, create the `ng-swagger-gen-cli.json` configuration file and add the
 following `scripts` to your `package.json`:
@@ -78,7 +81,8 @@ following `scripts` to your `package.json`:
 {
   "scripts": {
     "swagger:generate": "ng-swagger-gen-cli generate -i ng-swagger-gen-cli.json",
-    "swagger:update": "ng-swagger-gen-cli update -i ng-swagger-gen-cli.json"
+    "swagger:update": "ng-swagger-gen-cli update -i ng-swagger-gen-cli.json",
+    "swagger:update:local": "ng-swagger-gen-cli local-update -i ng-swagger-gen-cli.json"
   }
 }
 ```
